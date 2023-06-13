@@ -23,5 +23,5 @@ jobs:
           file: .
           push: true
           tags: |
-            dianini/teste_CI:v1
-            dianini/teste_CI:latest
+            dianini/teste_ci:v1
+            dianini/teste_ci:latest
