@@ -1,18 +1,23 @@
-FROM tomcat:9-jre8-alpine
+FROM registry.access.redhat.com/ubi8/openjdk-11:1.3
 
-RUN apk --update add curl ca-certificates tar 
-RUN set -x \
-    && mkdir /home/mysql \
-    && curl -fSL https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.40.tar.gz -o /home/mysql/mysql-connector.jar \
-    && ls -la \
-    && cd /home/mysql \
-    && tar -xzvf mysql-connector.jar \
-    && pwd \
-    && mkdir -p /usr/share/java \
-    && mv /home/mysql/mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar /usr/share/java/mysql-connector-java.jar \
-    && cd /home \
-    && rm -R *
+ARG RUN_JAVA_VERSION=1.3.5
 
-RUN export CLASSPATH=$CLASSPATH:/usr/share/java/mysql-connector-java.jar
+USER root
 
-#ADD ./target/myshuttledev.war /usr/local/tomcat/webapps/myshuttledev.war
+# Install java and the run-java script
+# Also set up permissions for user `1001`
+RUN  curl https://repo1.maven.org/maven2/io/fabric8/run-java-sh/${RUN_JAVA_VERSION}/run-java-sh-${RUN_JAVA_VERSION}-sh.sh -o /deployments/run-java.sh \
+    && chown 1001 /deployments/run-java.sh \
+    && chmod 540 /deployments/run-java.sh \
+    && echo "securerandom.source=file:/dev/urandom" >> /etc/alternatives/jre/lib/security/java.security
+
+# Configure the JAVA_OPTIONS, you can add -XshowSettings:vm to also display the heap size.
+ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+
+COPY target/lib/* /deployments/lib/
+COPY target/*-runner.jar /deployments/app.jar
+
+EXPOSE 8080
+USER 1001
+
+ENTRYPOINT [ "/deployments/run-java.sh" ]
