@@ -1,4 +1,4 @@
-FROM eclipse-temurin:8-jdk-jammy
+FROM eclipse-temurin:17-jdk
 
 CMD ["gradle"]
 
@@ -39,7 +39,7 @@ RUN set -o errexit -o nounset \
     && which hg \
     && which svn
 
-ENV GRADLE_VERSION 7.6.2
+ENV GRADLE_VERSION 7.6.1
 ARG GRADLE_DOWNLOAD_SHA256=a01b6587e15fe7ed120a0ee299c25982a1eee045abd6a9dd5e216b2f628ef9ac
 RUN set -o errexit -o nounset \
     && echo "Downloading Gradle" \
