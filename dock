@@ -1,13 +1,3 @@
-Cada um dos repositórios possui um Dockerfile que é utilizado para buscar uma imagem base em um ECR (Elastic Container Registry) que já possui as informações base, além de dependências e as imagens que serão usadas nas aplicações. 
-
-O Dockerfile contém as instruções para configuração de versão e home do Java, download do sonar scanner CLI, Java Development Kit e os binários do Maven e Gradle. 
-
-Figura 2 - Exemplo de Dockerfile de um dos ados 
-
-Interface gráfica do usuário, Texto, Aplicativo
-
-Descrição gerada automaticamente 
-
 Cada um dos ado possuem um arquivo values.yaml que altera a configuração do agente no kubernetes. Até o momento os recursos computacionais são os mesmos para todos mas podem ser alterados. No momento as alterações realizadas foram as linhas 18 e 22 do arquivo que apontam para qual demanda esse agente deve ser criado e com qual nome como na imagem abaixo é usado o exemplo PAN_JDK11_GRADLE7_KUMULUS que é o ponteiro do placeholder e ado-jdk11-gradle7-kumulus sendo o nome do agent que será instalado no KEDA. 
 
 Figura 3 - Exemplo de values.yaml em um ado 
@@ -28,20 +18,3 @@ Interface gráfica do usuário
 
 Descrição gerada automaticamente com confiança média 
 
- 
-
-Fluxo de CI/CD 
-
-É utilizada a metodologia de Desenvolvimento e Gerenciamento de Código. 
-
-A metodologia de desenvolvimento adotada segue uma abordagem de GitFlow, que é implementada através do uso das branches padrão do Git: "master," "develop," "feature," "release," e "hotfix." 
-
-Desenvolvimento em Branches dedicados: Os desenvolvedores trabalham em suas respectivas funcionalidades em branches dedicadas. Cada funcionalidade é desenvolvida em uma branch de feature separada, permitindo um desenvolvimento paralelo e isolado. 
-
-Implantações Manuais em Ambientes de Desenvolvimento: As mudanças são testadas em ambientes de desenvolvimento através de implantações manuais. Isso garante que as funcionalidades desenvolvidas estejam funcionando corretamente antes de serem integradas ao fluxo principal. 
-
-Uso do GitFlow: O GitFlow é adotado como uma metodologia para gerenciamento de branches. Isso inclui a branch "master" para produção, a branch "develop" para desenvolvimento contínuo, branches de "feature" para novas funcionalidades, branches de "release" para preparação de versões e branches de "hotfix" para correções de emergência. 
-
-Automatização de Revisões de Código no Azure DevOps: No Azure DevOps, fazemos uso das funcionalidades de branch policies para automatizar o processo de revisão de código. Isso garante que todas as mudanças sejam revisadas e aprovadas antes de serem mescladas nas branches principais, garantindo a qualidade do código e a conformidade com as práticas estabelecidas. 
-
-Essas práticas de desenvolvimento e gerenciamento de código visam melhorar a eficiência do processo, garantindo a qualidade e a integridade do software em todas as etapas do ciclo de vida de desenvolvimento. 
