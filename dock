@@ -1,0 +1,97 @@
+Samples 
+
+Existem repositórios com o início sample, esses repositórios são responsáveis por chamar templates que possuem os códigos de aplicação e etapas de testes e segurança, são os seguintes repositórios 
+
+sample-jdk8-gradle7 
+
+sample-jdk8-maven3 
+
+sample-jdk11-gradle7 
+
+sample-jdk11-maven3 
+
+sample-jdk11-quarkus3 
+
+sample-jdk17-gradle7 
+
+sample-jdk17-maven3 
+
+sample-jdk17-quarkus3 
+
+NOTA: Não existe sample-jdk8-quarkus3 pois o quarkus não tem suporte para jdk8. 
+
+A estrutura de cada repositório é similar, contendo uma pasta k8s com ambientes de dev, hml e prd, já configuradas para criar no cluster Kubernetes as aplicações. 
+
+Figura 6 - Exemplo de pasta Kubernetes 
+
+Interface gráfica do usuário, Texto, Aplicativo, Email
+
+Descrição gerada automaticamente 
+
+Existe uma pasta src com a aplicação em sí, que varia de maven para java e quarkus, um Dockerfile para que rode a aplicação. E arquivos de dependência como .xml ou .gradle, além do manifesto da pipeline. 
+
+A Pipeline chama templates respectivos de seu jdks e ferramentas. 
+
+Para usar de exemplo o fluxo é o seguinte: 
+
+Sample-jdk17-maven3 chama o template de jdk17-maven3 
+
+Figura 7 - Exemplo de chamada de template no pipeline sample 
+
+Interface gráfica do usuário, Texto, Aplicativo
+
+Descrição gerada automaticamente 
+
+Por sua vez o pipeline do jdk17-maven3 chama o grupo de variaveis necessário para o deploy no EKS do bancoPan além de outras regras como a própria pipeline de pull request e os repositórios pipeline-steps e pipeline-steps-si. O repositório pipeline-steps contêm templates de ferramentas gerais que serão utilizadas para todas as linguagens que serão realizadas no projeto, como sonarScanner, BuildKit, scripts de teste, publicação de artefatos no ECR entre outros. 
+
+NOTA: o repositório pipeline-steps-si não temos acesso pois está em outro projeto. 
+
+Figura 8 - Exemplo de pipeline jdk17-maven3 (1) 
+
+Interface gráfica do usuário, Aplicativo
+
+Descrição gerada automaticamente 
+
+Essa pipeline também chama o template do build da aplicação com suas dependências e configuramos qual máquina será usada na demanda, qual agent será provisionado pelo KEDA para rodar a aplicação, além disso utiliza o template de deploy da aplicação no EKS para os ambientes. 
+
+Figura 9 - Exemplo de pipeline jdk17-maven3 (2) 
+
+Interface gráfica do usuário, Aplicativo
+
+Descrição gerada automaticamente 
+
+E por fim temos dentro do repositório pipeline-steps as pastas com os manifestos de configuração e templates que estão sendo utilizados no fluxo, no caso de nosso exemplo dentro da pasta Build temos o buildMaven.yaml e com ele chamamos todos os outros templates necessários como demonstrado na imagem abaixo. 
+
+Figura 10 - Exemplo do buildMaven e chamada de templates (1) 
+
+Interface gráfica do usuário, Aplicativo
+
+Descrição gerada automaticamente 
+
+Figura 11 - Exemplo do buildMaven e chamada de templates (2) 
+
+Interface gráfica do usuário, Texto
+
+Descrição gerada automaticamente 
+
+ 
+
+Sonar Scanner 
+
+Para a execução do Sonar Scanner, é utilizado a solução CLI que vem presente ao Agente do Azure DevOps construído pelo Ado (ScaledJobs), sendo utilizado o template Common/SonarScanner.yaml que está armazenado no repositório pipeline-stepsdo projeto platform-engineering-kumulus. 
+
+Interface gráfica do usuário, Texto, Aplicativo, Email, Teams
+
+Descrição gerada automaticamente 
+
+O template recebe 4 parametros: 
+
+AppName(string): O nome da aplicação 
+
+AppVersion(string): Versão 
+
+SonarSources(string): O caminho relacional dos arquivos fonte da aplicação 
+
+SonarJavaBinaries(string): O caminho relacional dos binários resultantes da compilação do Java (Requerido para aplicações Java) 
+
+QualityGate(boolean): Parâmetro utilizado para garantir que o código passe pela garantia de qualidade do SonarQube, senão o processo de construção é finalizado em falha. Padrão sempre em true 
