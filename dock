@@ -1,97 +1,47 @@
-Samples 
+Cada um dos repositórios possui um Dockerfile que é utilizado para buscar uma imagem base em um ECR (Elastic Container Registry) que já possui as informações base, além de dependências e as imagens que serão usadas nas aplicações. 
 
-Existem repositórios com o início sample, esses repositórios são responsáveis por chamar templates que possuem os códigos de aplicação e etapas de testes e segurança, são os seguintes repositórios 
+O Dockerfile contém as instruções para configuração de versão e home do Java, download do sonar scanner CLI, Java Development Kit e os binários do Maven e Gradle. 
 
-sample-jdk8-gradle7 
-
-sample-jdk8-maven3 
-
-sample-jdk11-gradle7 
-
-sample-jdk11-maven3 
-
-sample-jdk11-quarkus3 
-
-sample-jdk17-gradle7 
-
-sample-jdk17-maven3 
-
-sample-jdk17-quarkus3 
-
-NOTA: Não existe sample-jdk8-quarkus3 pois o quarkus não tem suporte para jdk8. 
-
-A estrutura de cada repositório é similar, contendo uma pasta k8s com ambientes de dev, hml e prd, já configuradas para criar no cluster Kubernetes as aplicações. 
-
-Figura 6 - Exemplo de pasta Kubernetes 
-
-Interface gráfica do usuário, Texto, Aplicativo, Email
-
-Descrição gerada automaticamente 
-
-Existe uma pasta src com a aplicação em sí, que varia de maven para java e quarkus, um Dockerfile para que rode a aplicação. E arquivos de dependência como .xml ou .gradle, além do manifesto da pipeline. 
-
-A Pipeline chama templates respectivos de seu jdks e ferramentas. 
-
-Para usar de exemplo o fluxo é o seguinte: 
-
-Sample-jdk17-maven3 chama o template de jdk17-maven3 
-
-Figura 7 - Exemplo de chamada de template no pipeline sample 
+Figura 2 - Exemplo de Dockerfile de um dos ados 
 
 Interface gráfica do usuário, Texto, Aplicativo
 
 Descrição gerada automaticamente 
 
-Por sua vez o pipeline do jdk17-maven3 chama o grupo de variaveis necessário para o deploy no EKS do bancoPan além de outras regras como a própria pipeline de pull request e os repositórios pipeline-steps e pipeline-steps-si. O repositório pipeline-steps contêm templates de ferramentas gerais que serão utilizadas para todas as linguagens que serão realizadas no projeto, como sonarScanner, BuildKit, scripts de teste, publicação de artefatos no ECR entre outros. 
+Cada um dos ado possuem um arquivo values.yaml que altera a configuração do agente no kubernetes. Até o momento os recursos computacionais são os mesmos para todos mas podem ser alterados. No momento as alterações realizadas foram as linhas 18 e 22 do arquivo que apontam para qual demanda esse agente deve ser criado e com qual nome como na imagem abaixo é usado o exemplo PAN_JDK11_GRADLE7_KUMULUS que é o ponteiro do placeholder e ado-jdk11-gradle7-kumulus sendo o nome do agent que será instalado no KEDA. 
 
-NOTA: o repositório pipeline-steps-si não temos acesso pois está em outro projeto. 
+Figura 3 - Exemplo de values.yaml em um ado 
 
-Figura 8 - Exemplo de pipeline jdk17-maven3 (1) 
-
-Interface gráfica do usuário, Aplicativo
+Interface gráfica do usuário, Texto, Aplicativo
 
 Descrição gerada automaticamente 
 
-Essa pipeline também chama o template do build da aplicação com suas dependências e configuramos qual máquina será usada na demanda, qual agent será provisionado pelo KEDA para rodar a aplicação, além disso utiliza o template de deploy da aplicação no EKS para os ambientes. 
+Por fim, todos os agentes que se planeja utilizar no ambiente devem antes de serem criados ser adicionada a demanda no seguinte caminho:  
 
-Figura 9 - Exemplo de pipeline jdk17-maven3 (2) 
+Organização DevOps bancopan -> Projeto platform-engineering-kumulus -> Project settings -> Agent pools -> pan-container-agents –> Agents -> placeholder -> Capabilities -> User-defined capabilities -> + 
 
-Interface gráfica do usuário, Aplicativo
+E adicionar os nomes das demandas que serão utilizadas como exemplo na imagem abaixo, com o valor true. 
 
-Descrição gerada automaticamente 
+Figura 4 - Exemplo de setup das demandas 
 
-E por fim temos dentro do repositório pipeline-steps as pastas com os manifestos de configuração e templates que estão sendo utilizados no fluxo, no caso de nosso exemplo dentro da pasta Build temos o buildMaven.yaml e com ele chamamos todos os outros templates necessários como demonstrado na imagem abaixo. 
+Interface gráfica do usuário
 
-Figura 10 - Exemplo do buildMaven e chamada de templates (1) 
-
-Interface gráfica do usuário, Aplicativo
-
-Descrição gerada automaticamente 
-
-Figura 11 - Exemplo do buildMaven e chamada de templates (2) 
-
-Interface gráfica do usuário, Texto
-
-Descrição gerada automaticamente 
+Descrição gerada automaticamente com confiança média 
 
  
 
-Sonar Scanner 
+Fluxo de CI/CD 
 
-Para a execução do Sonar Scanner, é utilizado a solução CLI que vem presente ao Agente do Azure DevOps construído pelo Ado (ScaledJobs), sendo utilizado o template Common/SonarScanner.yaml que está armazenado no repositório pipeline-stepsdo projeto platform-engineering-kumulus. 
+É utilizada a metodologia de Desenvolvimento e Gerenciamento de Código. 
 
-Interface gráfica do usuário, Texto, Aplicativo, Email, Teams
+A metodologia de desenvolvimento adotada segue uma abordagem de GitFlow, que é implementada através do uso das branches padrão do Git: "master," "develop," "feature," "release," e "hotfix." 
 
-Descrição gerada automaticamente 
+Desenvolvimento em Branches dedicados: Os desenvolvedores trabalham em suas respectivas funcionalidades em branches dedicadas. Cada funcionalidade é desenvolvida em uma branch de feature separada, permitindo um desenvolvimento paralelo e isolado. 
 
-O template recebe 4 parametros: 
+Implantações Manuais em Ambientes de Desenvolvimento: As mudanças são testadas em ambientes de desenvolvimento através de implantações manuais. Isso garante que as funcionalidades desenvolvidas estejam funcionando corretamente antes de serem integradas ao fluxo principal. 
 
-AppName(string): O nome da aplicação 
+Uso do GitFlow: O GitFlow é adotado como uma metodologia para gerenciamento de branches. Isso inclui a branch "master" para produção, a branch "develop" para desenvolvimento contínuo, branches de "feature" para novas funcionalidades, branches de "release" para preparação de versões e branches de "hotfix" para correções de emergência. 
 
-AppVersion(string): Versão 
+Automatização de Revisões de Código no Azure DevOps: No Azure DevOps, fazemos uso das funcionalidades de branch policies para automatizar o processo de revisão de código. Isso garante que todas as mudanças sejam revisadas e aprovadas antes de serem mescladas nas branches principais, garantindo a qualidade do código e a conformidade com as práticas estabelecidas. 
 
-SonarSources(string): O caminho relacional dos arquivos fonte da aplicação 
-
-SonarJavaBinaries(string): O caminho relacional dos binários resultantes da compilação do Java (Requerido para aplicações Java) 
-
-QualityGate(boolean): Parâmetro utilizado para garantir que o código passe pela garantia de qualidade do SonarQube, senão o processo de construção é finalizado em falha. Padrão sempre em true 
+Essas práticas de desenvolvimento e gerenciamento de código visam melhorar a eficiência do processo, garantindo a qualidade e a integridade do software em todas as etapas do ciclo de vida de desenvolvimento. 
