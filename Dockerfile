@@ -9,8 +9,11 @@ ENV DOTNET_GENERATE_ASPNET_CERTIFICATE=false \
     DOTNET_SDK_VERSION=7.0.401 \
     # Enable correct mode for dotnet watch (only mode supported in a container)
     DOTNET_USE_POLLING_FILE_WATCHER=true \
+    # Skip extraction of XML docs - generally not useful within an image/container - helps performance
     NUGET_XMLDOC_MODE=skip \
-    
+    # PowerShell telemetry for docker image usage
+    POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-DotnetSDK-Debian-11
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         curl \
