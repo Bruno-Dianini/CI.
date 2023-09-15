@@ -1,5 +1,5 @@
 # Use a imagem base do Ubuntu 20.04
-ARG REPO=mcr.microsoft.com/dotnet/aspnet
+#ARG REPO=mcr.microsoft.com/dotnet/aspnet
 FROM $REPO:7.0.11-bullseye-slim-amd64
 
 ENV DOTNET_GENERATE_ASPNET_CERTIFICATE=false \
