@@ -11,9 +11,7 @@ ENV DOTNET_GENERATE_ASPNET_CERTIFICATE=false \
     DOTNET_USE_POLLING_FILE_WATCHER=true \
     # Skip extraction of XML docs - generally not useful within an image/container - helps performance
     NUGET_XMLDOC_MODE=skip \
-    # PowerShell telemetry for docker image usage
-    POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-DotnetSDK-Debian-11
-
+    
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         curl \
